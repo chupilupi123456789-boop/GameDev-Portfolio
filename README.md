@@ -1,2 +1,13 @@
-# GameDev-Portfolio
-Portafolio personal de desarrollo de videojuegos con los proyectos realizados durante la materia.
+## Juegos
+
+### Come Sano: El Cazador de Nutrientes
+
+Videojuego arcade educativo inspirado en Pac-Man, donde el jugador debe recolectar comida saludable y evitar la comida chatarra.
+
+[Ver juego](games/come-sano-pacman/)
+
+### EcoClasifica: Recicla Correctamente
+
+Videojuego arcade educativo sobre reciclaje, precisión y velocidad de reacción.
+
+[Ver juego](games/ecoclasifica/)
