@@ -71,7 +71,7 @@ La IA fue utilizada como apoyo durante el proceso de desarrollo, mientras que la
 
 ![Pantalla inicial](imagenes/pantalla-inicial.png)
 
- Gameplay
+ Pantalla de inicio
 
 ![Gameplay](imagenes/gameplay.png)
 
