@@ -1,1 +1,888 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mica — un video, muchos caminos</title>
+<style>
+  :root{
+    --bg: #08090b;
+    --bg-vignette: radial-gradient(ellipse at center, #14161c 0%, #08090b 65%, #050506 100%);
+    --text: #e9e7e2;
+    --text-dim: #83858c;
+    --text-faint: #4c4e56;
+    --accent: #5a86ab;
+    --accent-soft: rgba(90,134,171,0.35);
+    --warn: #a4453f;
+    --warn-soft: rgba(164,69,63,0.35);
+    --line: #2a2c33;
+    --line-soft: #1c1e24;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --sans: 'Helvetica Neue', Arial, sans-serif;
+  }
 
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background: var(--bg);
+    overflow:hidden;
+  }
+  body{
+    font-family: var(--serif);
+    color: var(--text);
+  }
+
+  #app{
+    position: fixed; inset:0;
+    background: var(--bg-vignette);
+    display:flex; align-items:center; justify-content:center;
+    padding: 4vh 6vw;
+  }
+
+  .screen-wrap{
+    width: 100%;
+    max-width: 720px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 900ms ease, transform 900ms ease;
+  }
+  .screen-wrap.visible{ opacity: 1; transform: translateY(0); }
+  .screen-wrap.fading{
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity 380ms ease, transform 380ms ease;
+  }
+
+  #stage{
+    width:100%;
+    display:flex; flex-direction:column; align-items:center; gap: 1.6rem;
+  }
+
+  .scene-visual{ width: 60px; height: 60px; color: var(--text-dim); opacity:0.9; }
+  .scene-visual svg{ width:100%; height:100%; display:block; }
+
+  .para{
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    line-height: 1.8; text-align:center; letter-spacing:0.01em;
+    color: var(--text); max-width: 600px; font-weight:400;
+  }
+
+  .eyebrow{
+    font-family: var(--sans); font-size:0.7rem; letter-spacing:0.28em;
+    text-transform:uppercase; color: var(--text-faint); text-align:center;
+  }
+
+  button{ font-family: var(--sans); background:none; cursor:pointer; border:none; }
+
+  .continue-btn{
+    border: 1px solid var(--line); color: var(--text-dim);
+    font-size: 0.72rem; letter-spacing:0.22em; text-transform:uppercase;
+    padding: 0.9em 2em; border-radius:2px;
+    transition: border-color 300ms ease, color 300ms ease, letter-spacing 300ms ease;
+  }
+  .continue-btn:hover, .continue-btn:focus-visible{
+    border-color: var(--accent); color: var(--text); letter-spacing:0.30em;
+  }
+
+  .choices{ display:flex; flex-direction:column; gap:0.9rem; width:100%; max-width:480px; }
+  .choice-btn{
+    border:1px solid var(--line); color:var(--text); font-family:var(--serif);
+    font-size:1.02rem; padding:1em 1.4em; text-align:left; border-radius:2px; position:relative;
+    transition: border-color 320ms ease, background 320ms ease, padding-left 320ms ease;
+  }
+  .choice-btn::before{
+    content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--accent);
+    transform:scaleY(0); transition: transform 320ms ease; transform-origin:bottom;
+  }
+  .choice-btn:hover, .choice-btn:focus-visible{ border-color:var(--line-soft); background:rgba(90,134,171,0.06); padding-left:1.8em; }
+  .choice-btn:hover::before, .choice-btn:focus-visible::before{ transform:scaleY(1); }
+
+  .diagram-wrap{ display:flex; flex-direction:column; align-items:center; gap:1.6rem; width:100%; }
+  .tree-svg{ width:100%; max-width:640px; height:auto; overflow:visible; }
+  .edge{ stroke-width:1.4; }
+  .edge-other{ stroke:var(--line); stroke-dasharray:3 4; }
+  .edge-chosen{ stroke:var(--accent); stroke-dasharray:260; stroke-dashoffset:260; animation:draw 900ms ease forwards; filter:drop-shadow(0 0 3px var(--accent-soft)); }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .node-root{ fill:var(--text-dim); stroke:var(--text-dim); }
+  .node-other{ fill:var(--bg); stroke:var(--line); stroke-width:1.2; }
+  .node-chosen{ fill:var(--accent); stroke:var(--accent); }
+  .label-other{ fill:var(--text-faint); font-family:var(--sans); font-size:10.5px; letter-spacing:0.02em; }
+  .label-chosen{ fill:var(--text); font-family:var(--sans); font-size:11px; letter-spacing:0.02em; font-weight:600; }
+
+  .final-title{ font-family:var(--serif); font-size:clamp(2rem,5vw,2.8rem); letter-spacing:0.04em; color:var(--text); text-align:center; }
+  .final-rule{ width:42px; height:1px; background:var(--accent); }
+  .final-ending{ font-size:1.05rem; line-height:1.8; text-align:center; color:var(--text-dim); max-width:560px; font-style:italic; }
+
+  .restart-btn{
+    margin-top:0.4rem; border:1px solid var(--accent); color:var(--text);
+    font-size:0.72rem; letter-spacing:0.24em; text-transform:uppercase;
+    padding:0.95em 2.2em; border-radius:2px; transition: background 300ms ease;
+  }
+  .restart-btn:hover, .restart-btn:focus-visible{ background: rgba(90,134,171,0.14); }
+
+  /* ---------- Vista de juego (canvas) ---------- */
+  #gameView{
+    width:100%; max-width:340px; margin:0 auto;
+    display:none; flex-direction:column; align-items:center; gap:0.7rem;
+  }
+  .game-frame{
+    width:100%; aspect-ratio: 320 / 460; position:relative;
+    border:1px solid var(--line); border-radius:6px; overflow:hidden;
+    background:#0c0d10;
+  }
+  #gameCanvas{ width:100%; height:100%; display:block; }
+  .game-caption{
+    font-family: var(--sans); font-size:0.68rem; letter-spacing:0.14em;
+    text-transform:uppercase; color: var(--text-faint); text-align:center;
+  }
+
+  .ctrl-panel{ display:flex; gap:0.7rem; justify-content:center; margin-top:0.2rem; }
+  .ctrl-panel.hidden{ display:none; }
+  .ctrl-btn{
+    width:54px; height:54px; border:1px solid var(--line); border-radius:10px;
+    color:var(--text-dim); font-size:1.3rem; display:flex; align-items:center; justify-content:center;
+    user-select:none; touch-action:none; transition: border-color 180ms, color 180ms, background 180ms;
+  }
+  .ctrl-btn.pressed{ border-color:var(--accent); color:var(--text); background:rgba(90,134,171,0.14); }
+  #ctrlVertical{ flex-direction:column; }
+  #ctrlDpad{
+    display:grid; grid-template-columns:54px 54px 54px; grid-template-rows:54px 54px 54px; gap:6px;
+    justify-content:center;
+  }
+  #ctrlDpad.hidden{ display:none; }
+  #dpadUp{ grid-column:2; grid-row:1; }
+  #dpadLeft{ grid-column:1; grid-row:2; }
+  #dpadRight{ grid-column:3; grid-row:2; }
+  #dpadDown{ grid-column:2; grid-row:3; }
+
+  .skip-hint{
+    position:fixed; bottom:1.2rem; right:1.4rem; font-family:var(--sans);
+    font-size:0.6rem; letter-spacing:0.18em; color:var(--text-faint);
+    text-transform:uppercase; opacity:0.5;
+  }
+
+  @media (max-width:520px){
+    .para{ font-size:1.05rem; line-height:1.65; }
+    .choice-btn{ font-size:0.95rem; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="screen-wrap" id="screenWrap">
+    <div id="stage"></div>
+    <div id="gameView">
+      <div class="game-frame"><canvas id="gameCanvas" width="320" height="460"></canvas></div>
+      <div class="game-caption" id="gameCaption"></div>
+
+      <div class="ctrl-panel hidden" id="ctrlLane">
+        <button class="ctrl-btn" id="laneLeft">◀</button>
+        <button class="ctrl-btn" id="laneRight">▶</button>
+      </div>
+      <div class="ctrl-panel hidden" id="ctrlHorizontal">
+        <button class="ctrl-btn" id="hLeft">◀</button>
+        <button class="ctrl-btn" id="hRight">▶</button>
+      </div>
+      <div class="ctrl-panel hidden" id="ctrlVertical">
+        <button class="ctrl-btn" id="vUp">▲</button>
+        <button class="ctrl-btn" id="vDown">▼</button>
+      </div>
+      <div class="ctrl-panel hidden" id="ctrlDpad">
+        <button class="ctrl-btn" id="dpadUp">▲</button>
+        <button class="ctrl-btn" id="dpadLeft">◀</button>
+        <button class="ctrl-btn" id="dpadRight">▶</button>
+        <button class="ctrl-btn" id="dpadDown">▼</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="skip-hint">Mica</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const screenWrap = document.getElementById('screenWrap');
+  const stage = document.getElementById('stage');
+  const gameView = document.getElementById('gameView');
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const captionEl = document.getElementById('gameCaption');
+
+  const state = { decision1: null, subDecision: null };
+
+  /* ============ ICONOS DE ESCENA (interludios narrativos) ============ */
+  const ICONS = {
+    mirror: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><rect x="46" y="8" width="18" height="54" rx="1" stroke-width="1.2" opacity="0.4"/><circle cx="24" cy="18" r="6" stroke-width="1.5"/><path d="M24 24 L24 44 M24 30 L13 22 M24 30 L37 27 M24 44 L15 60 M24 44 L34 58" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    phone: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><rect x="23" y="9" width="24" height="44" rx="3" stroke-width="1.4"/><line x1="29" y1="46" x2="41" y2="46" stroke-width="1.4"/><circle cx="53" cy="16" r="3.2" fill="currentColor" stroke="none"/><circle cx="59" cy="27" r="2.3" fill="currentColor" stroke="none" opacity="0.65"/><circle cx="55" cy="36" r="1.7" fill="currentColor" stroke="none" opacity="0.4"/></svg>',
+    isolation: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><rect x="13" y="13" width="46" height="46" stroke-width="1.2" opacity="0.5"/><line x1="13" y1="13" x2="59" y2="13" stroke-width="1.2"/><path d="M19 19 Q36 27 19 59" stroke-width="1.1" opacity="0.5"/><path d="M53 19 Q36 27 53 59" stroke-width="1.1" opacity="0.5"/><circle cx="36" cy="42" r="5" stroke-width="1.4"/><path d="M36 47 L36 56" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    conflict: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><path d="M10 15 h24 a4 4 0 0 1 4 4 v12 a4 4 0 0 1 -4 4 h-14 l-8 8 v-8 h-2 a4 4 0 0 1 -4 -4 v-12 a4 4 0 0 1 4 -4 z" stroke-width="1.3"/><path d="M34 33 h24 a4 4 0 0 1 4 4 v12 a4 4 0 0 1 -4 4 h-2 v8 l-8 -8 h-14 a4 4 0 0 1 -4 -4 v-12 a4 4 0 0 1 4 -4 z" stroke-width="1.3"/></svg>',
+    support: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><circle cx="21" cy="20" r="6" stroke-width="1.4"/><path d="M21 26 L21 45 M21 32 L13 40 M21 32 L29 38" stroke-width="1.4" stroke-linecap="round"/><circle cx="51" cy="20" r="6" stroke-width="1.4"/><path d="M51 26 L51 45 M51 32 L59 40 M51 32 L43 37" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    recovery: '<svg viewBox="0 0 72 72" fill="none" stroke="currentColor"><circle cx="36" cy="18" r="6" stroke-width="1.4"/><path d="M36 24 L36 44 M36 30 L24 23 M36 30 L48 26 M36 44 L26 58 M36 44 L46 58" stroke-width="1.4" stroke-linecap="round"/><line x1="9" y1="9" x2="16" y2="16" stroke-width="1.1" opacity="0.5"/><line x1="63" y1="9" x2="56" y2="16" stroke-width="1.1" opacity="0.5"/><line x1="8" y1="30" x2="16" y2="30" stroke-width="1.1" opacity="0.4"/><line x1="64" y1="30" x2="56" y2="30" stroke-width="1.1" opacity="0.4"/></svg>'
+  };
+
+  /* ============ TRANSICIÓN ENTRE PANTALLAS ============ */
+  function transitionTo(renderFn){
+    screenWrap.classList.remove('visible');
+    screenWrap.classList.add('fading');
+    setTimeout(() => {
+      renderFn();
+      screenWrap.classList.remove('fading');
+      void screenWrap.offsetWidth;
+      requestAnimationFrame(() => screenWrap.classList.add('visible'));
+    }, 380);
+  }
+
+  /* ============ PANTALLA DE TEXTO (narrativa) ============ */
+  function showText(icon, paras, idx, onContinue){
+    stopGame();
+    transitionTo(() => {
+      gameView.style.display = 'none';
+      stage.style.display = 'flex';
+      stage.innerHTML = '';
+
+      if (icon){
+        const wrap = document.createElement('div');
+        wrap.className = 'scene-visual';
+        wrap.innerHTML = ICONS[icon];
+        stage.appendChild(wrap);
+      }
+      const p = document.createElement('div');
+      p.className = 'para';
+      p.textContent = paras[idx];
+      stage.appendChild(p);
+
+      const isLast = idx === paras.length - 1;
+      const btn = document.createElement('button');
+      btn.className = 'continue-btn';
+      btn.textContent = 'Continuar';
+      btn.onclick = () => {
+        if (isLast) onContinue();
+        else showText(icon, paras, idx + 1, onContinue);
+      };
+      stage.appendChild(btn);
+      btn.focus();
+    });
+  }
+
+  function showChoices(icon, paras, choices, onChoose){
+    showTextThenChoices(icon, paras, 0, choices, onChoose);
+  }
+  function showTextThenChoices(icon, paras, idx, choices, onChoose){
+    stopGame();
+    transitionTo(() => {
+      gameView.style.display = 'none';
+      stage.style.display = 'flex';
+      stage.innerHTML = '';
+      if (icon){
+        const wrap = document.createElement('div');
+        wrap.className = 'scene-visual';
+        wrap.innerHTML = ICONS[icon];
+        stage.appendChild(wrap);
+      }
+      const p = document.createElement('div');
+      p.className = 'para';
+      p.textContent = paras[idx];
+      stage.appendChild(p);
+
+      const isLast = idx === paras.length - 1;
+      if (!isLast){
+        const btn = document.createElement('button');
+        btn.className = 'continue-btn';
+        btn.textContent = 'Continuar';
+        btn.onclick = () => showTextThenChoices(icon, paras, idx + 1, choices, onChoose);
+        stage.appendChild(btn);
+        btn.focus();
+        return;
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'choices';
+      choices.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'choice-btn';
+        b.textContent = c.label;
+        b.onclick = () => onChoose(c.value);
+        wrap.appendChild(b);
+      });
+      stage.appendChild(wrap);
+      wrap.querySelector('button').focus();
+    });
+  }
+
+  /* ============ ÁRBOL DE RAMAS (SVG, sin cambios de concepto) ============ */
+  function multilineText(n){
+    const lines = String(n.label).split('\n');
+    const startDy = n.labelPos === 'above' ? -14 - (lines.length - 1) * 14 : 22;
+    let out = `<text x="${n.x}" text-anchor="middle" class="node-label ${n.state === 'chosen' ? 'label-chosen' : 'label-other'}">`;
+    lines.forEach((line, i) => { out += `<tspan x="${n.x}" y="${n.y + startDy + i * 14}">${line}</tspan>`; });
+    out += `</text>`;
+    return out;
+  }
+  function renderTreeSVG(nodes, edges, viewH){
+    const byId = id => nodes.find(n => n.id === id);
+    let svg = `<svg class="tree-svg" viewBox="0 0 640 ${viewH}" xmlns="http://www.w3.org/2000/svg">`;
+    edges.forEach(e => {
+      const a = byId(e.from), b = byId(e.to);
+      svg += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="edge ${e.chosen ? 'edge-chosen' : 'edge-other'}"/>`;
+    });
+    nodes.forEach(n => {
+      const cls = n.state === 'chosen' ? 'node-chosen' : (n.state === 'root' ? 'node-root' : 'node-other');
+      svg += `<circle cx="${n.x}" cy="${n.y}" r="6.5" class="node ${cls}"/>`;
+      svg += multilineText(n);
+    });
+    svg += `</svg>`;
+    return svg;
+  }
+  function buildDecisionTree(chosen){
+    const nodes = [
+      { id:'root', x:320, y:26, label:'El video se viraliza', state:'root', labelPos:'above' },
+      { id:'a', x:120, y:120, label:'Borrar todo y\ndesaparecer', state: chosen==='aislarse'?'chosen':'other', labelPos:'below' },
+      { id:'b', x:320, y:120, label:'Responder y\ndefenderse', state: chosen==='responder'?'chosen':'other', labelPos:'below' },
+      { id:'c', x:520, y:120, label:'Contarle a alguien\nde confianza', state: chosen==='ayuda'?'chosen':'other', labelPos:'below' }
+    ];
+    const edges = [
+      { from:'root', to:'a', chosen: chosen==='aislarse' },
+      { from:'root', to:'b', chosen: chosen==='responder' },
+      { from:'root', to:'c', chosen: chosen==='ayuda' }
+    ];
+    return { nodes, edges, viewH: 170 };
+  }
+  function buildSubTree(chosen){
+    const nodes = [
+      { id:'root', x:320, y:26, label:'¿A quién le cuenta?', state:'root', labelPos:'above' },
+      { id:'amigo', x:140, y:120, label:'Un amigo\ncercano', state: chosen==='amigo'?'chosen':'other', labelPos:'below' },
+      { id:'familiar', x:320, y:120, label:'Un familiar', state: chosen==='familiar'?'chosen':'other', labelPos:'below' },
+      { id:'profesor', x:500, y:120, label:'Un profesor', state: chosen==='profesor'?'chosen':'other', labelPos:'below' }
+    ];
+    const edges = [
+      { from:'root', to:'amigo', chosen: chosen==='amigo' },
+      { from:'root', to:'familiar', chosen: chosen==='familiar' },
+      { from:'root', to:'profesor', chosen: chosen==='profesor' }
+    ];
+    return { nodes, edges, viewH: 170 };
+  }
+  function buildFinalTree(s){
+    const nodes = [
+      { id:'root', x:320, y:22, label:'El video', state:'root', labelPos:'above' },
+      { id:'a', x:110, y:100, label:'Aislarse', state: s.decision1==='aislarse'?'chosen':'other', labelPos:'below' },
+      { id:'b', x:320, y:100, label:'Responder', state: s.decision1==='responder'?'chosen':'other', labelPos:'below' },
+      { id:'c', x:530, y:100, label:'Pedir ayuda', state: s.decision1==='ayuda'?'chosen':'other', labelPos:'below' }
+    ];
+    const edges = [
+      { from:'root', to:'a', chosen: s.decision1==='aislarse' },
+      { from:'root', to:'b', chosen: s.decision1==='responder' },
+      { from:'root', to:'c', chosen: s.decision1==='ayuda' }
+    ];
+    nodes.push({ id:'finalA', x:110, y:178, label:'Aislamiento', state: s.decision1==='aislarse'?'chosen':'other', labelPos:'below' });
+    edges.push({ from:'a', to:'finalA', chosen: s.decision1==='aislarse' });
+    nodes.push({ id:'finalB', x:320, y:178, label:'Conflicto', state: s.decision1==='responder'?'chosen':'other', labelPos:'below' });
+    edges.push({ from:'b', to:'finalB', chosen: s.decision1==='responder' });
+    let viewH = 210;
+    if (s.decision1 === 'ayuda'){
+      const subs = [{ id:'amigo', x:440, label:'Amigo' }, { id:'familiar', x:530, label:'Familiar' }, { id:'profesor', x:620, label:'Profesor' }];
+      subs.forEach(sub => {
+        nodes.push({ id:sub.id, x:sub.x, y:178, label:sub.label, state: s.subDecision===sub.id?'chosen':'other', labelPos:'below' });
+        edges.push({ from:'c', to:sub.id, chosen: s.subDecision===sub.id });
+      });
+      const chosenSub = subs.find(sub => sub.id === s.subDecision);
+      nodes.push({ id:'finalC', x: chosenSub.x, y:262, label:'Recuperación', state:'chosen', labelPos:'below' });
+      edges.push({ from: chosenSub.id, to:'finalC', chosen: true });
+      viewH = 300;
+    }
+    return { nodes, edges, viewH };
+  }
+
+  function showBranchDiagram(choiceKey, chosenValue, onContinue){
+    stopGame();
+    const tree = choiceKey === 'decision1' ? buildDecisionTree(chosenValue) : buildSubTree(chosenValue);
+    transitionTo(() => {
+      gameView.style.display = 'none';
+      stage.style.display = 'flex';
+      stage.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = 'diagram-wrap';
+      const eyebrow = document.createElement('div');
+      eyebrow.className = 'eyebrow';
+      eyebrow.textContent = 'Camino elegido';
+      wrap.appendChild(eyebrow);
+      const svgHolder = document.createElement('div');
+      svgHolder.style.width = '100%';
+      svgHolder.innerHTML = renderTreeSVG(tree.nodes, tree.edges, tree.viewH);
+      wrap.appendChild(svgHolder);
+      const btn = document.createElement('button');
+      btn.className = 'continue-btn';
+      btn.textContent = 'Continuar';
+      btn.onclick = onContinue;
+      wrap.appendChild(btn);
+      stage.appendChild(wrap);
+      btn.focus();
+    });
+  }
+
+  function showFinalScreen(cfg){
+    stopGame();
+    const tree = buildFinalTree(state);
+    transitionTo(() => {
+      gameView.style.display = 'none';
+      stage.style.display = 'flex';
+      stage.innerHTML = '';
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'scene-visual';
+      iconWrap.innerHTML = ICONS[cfg.icon];
+      stage.appendChild(iconWrap);
+      const eyebrow = document.createElement('div');
+      eyebrow.className = 'eyebrow';
+      eyebrow.textContent = 'Final';
+      stage.appendChild(eyebrow);
+      const title = document.createElement('div');
+      title.className = 'final-title';
+      title.textContent = cfg.final;
+      stage.appendChild(title);
+      const rule = document.createElement('div');
+      rule.className = 'final-rule';
+      stage.appendChild(rule);
+      const ending = document.createElement('div');
+      ending.className = 'final-ending';
+      ending.textContent = cfg.endingText;
+      stage.appendChild(ending);
+      const svgHolder = document.createElement('div');
+      svgHolder.style.width = '100%';
+      svgHolder.innerHTML = renderTreeSVG(tree.nodes, tree.edges, tree.viewH);
+      stage.appendChild(svgHolder);
+      const restart = document.createElement('button');
+      restart.className = 'restart-btn';
+      restart.textContent = 'Jugar de nuevo';
+      restart.onclick = () => {
+        state.decision1 = null;
+        state.subDecision = null;
+        startGameFlow();
+      };
+      stage.appendChild(restart);
+      restart.focus();
+    });
+  }
+
+  /* ============ MOTOR DE MINIJUEGOS (canvas) ============ */
+  const LOGICAL_W = 320, LOGICAL_H = 460;
+  let rafId = null;
+  let keys = { left:false, right:false, up:false, down:false };
+  let currentMode = null;      // 'lane' | 'hold'
+  let laneMoveCallback = null;
+
+  function setupCanvasScale(){
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = LOGICAL_W * dpr;
+    canvas.height = LOGICAL_H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  setupCanvasScale();
+
+  function stopGame(){
+    if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    currentMode = null;
+    laneMoveCallback = null;
+    keys.left = keys.right = keys.up = keys.down = false;
+  }
+
+  function clamp(v, mn, mx){ return Math.min(mx, Math.max(mn, v)); }
+  function rand(a, b){ return a + Math.random() * (b - a); }
+  function randInt(a, b){ return Math.floor(rand(a, b + 1)); }
+
+  function setCaption(text){ captionEl.textContent = text; }
+
+  function showControls(name){
+    ['ctrlLane','ctrlHorizontal','ctrlVertical','ctrlDpad'].forEach(id => {
+      document.getElementById(id).classList.toggle('hidden', id.toLowerCase() !== ('ctrl' + name).toLowerCase());
+    });
+  }
+
+  function bindHold(el, keyName){
+    const down = (e) => { e.preventDefault(); keys[keyName] = true; el.classList.add('pressed'); };
+    const up = () => { keys[keyName] = false; el.classList.remove('pressed'); };
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointerleave', up);
+    el.addEventListener('pointercancel', up);
+  }
+  function bindTap(el, fn){
+    el.addEventListener('pointerdown', (e) => { e.preventDefault(); fn(); });
+  }
+
+  bindTap(document.getElementById('laneLeft'), () => laneMoveCallback && laneMoveCallback(-1));
+  bindTap(document.getElementById('laneRight'), () => laneMoveCallback && laneMoveCallback(1));
+  bindHold(document.getElementById('hLeft'), 'left');
+  bindHold(document.getElementById('hRight'), 'right');
+  bindHold(document.getElementById('vUp'), 'up');
+  bindHold(document.getElementById('vDown'), 'down');
+  bindHold(document.getElementById('dpadUp'), 'up');
+  bindHold(document.getElementById('dpadDown'), 'down');
+  bindHold(document.getElementById('dpadLeft'), 'left');
+  bindHold(document.getElementById('dpadRight'), 'right');
+
+  window.addEventListener('keydown', (e) => {
+    const k = e.key;
+    if (currentMode === 'lane'){
+      if (k === 'ArrowLeft' || k === 'a' || k === 'A') laneMoveCallback && laneMoveCallback(-1);
+      if (k === 'ArrowRight' || k === 'd' || k === 'D') laneMoveCallback && laneMoveCallback(1);
+      return;
+    }
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') keys.left = true;
+    if (k === 'ArrowRight' || k === 'd' || k === 'D') keys.right = true;
+    if (k === 'ArrowUp' || k === 'w' || k === 'W') keys.up = true;
+    if (k === 'ArrowDown' || k === 's' || k === 'S') keys.down = true;
+  });
+  window.addEventListener('keyup', (e) => {
+    if (currentMode === 'lane') return;
+    const k = e.key;
+    if (k === 'ArrowLeft' || k === 'a' || k === 'A') keys.left = false;
+    if (k === 'ArrowRight' || k === 'd' || k === 'D') keys.right = false;
+    if (k === 'ArrowUp' || k === 'w' || k === 'W') keys.up = false;
+    if (k === 'ArrowDown' || k === 's' || k === 'S') keys.down = false;
+  });
+
+  function startGameScreen(){
+    transitionTo(() => {
+      stage.style.display = 'none';
+      gameView.style.display = 'flex';
+    });
+  }
+
+  /* --- Dibujo compartido --- */
+  function clearCanvas(){
+    ctx.fillStyle = '#0c0d10';
+    ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+  }
+  function drawMica(x, y, scale, color){
+    ctx.strokeStyle = color; ctx.lineWidth = 2.2 * scale; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.arc(x, y - 18 * scale, 6 * scale, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y - 12 * scale); ctx.lineTo(x, y + 8 * scale);
+    ctx.moveTo(x, y - 6 * scale); ctx.lineTo(x - 9 * scale, y - 12 * scale);
+    ctx.moveTo(x, y - 6 * scale); ctx.lineTo(x + 9 * scale, y - 2 * scale);
+    ctx.moveTo(x, y + 8 * scale); ctx.lineTo(x - 7 * scale, y + 22 * scale);
+    ctx.moveTo(x, y + 8 * scale); ctx.lineTo(x + 7 * scale, y + 22 * scale);
+    ctx.stroke();
+  }
+  function drawBar(label, value, max, color){
+    ctx.fillStyle = '#4c4e56';
+    ctx.font = '10px Helvetica, Arial, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(label, 18, 22);
+    ctx.strokeStyle = '#2a2c33'; ctx.lineWidth = 1;
+    ctx.strokeRect(18, 28, 200, 8);
+    ctx.fillStyle = color;
+    ctx.fillRect(18, 28, 200 * clamp(value / max, 0, 1), 8);
+  }
+
+  /* --- 1. Baile: recolectar chispas en 3 carriles --- */
+  function gameDance(onComplete, opts){
+    opts = opts || {};
+    const duration = opts.duration || 9000;
+    setCaption(opts.caption || 'Cambia de carril y recoge las chispas');
+    showControls('Lane');
+    currentMode = 'lane';
+    const laneX = [90, 160, 230];
+    let playerLane = 1;
+    laneMoveCallback = (dir) => { playerLane = clamp(playerLane + dir, 0, 2); };
+
+    let sparkles = [], spawnTimer = 0, elapsed = 0, score = 0, last = null, finished = false;
+
+    function loop(ts){
+      if (last === null) last = ts;
+      const dt = ts - last; last = ts; elapsed += dt; spawnTimer += dt;
+
+      if (spawnTimer > 620){ spawnTimer = 0; sparkles.push({ lane: randInt(0, 2), y: -10 }); }
+      sparkles.forEach(s => s.y += dt * 0.17);
+      sparkles = sparkles.filter(s => {
+        if (s.y > 375 && s.y < 415 && s.lane === playerLane){ score++; return false; }
+        return s.y < 450;
+      });
+
+      clearCanvas();
+      laneX.forEach(x => { ctx.strokeStyle = '#1c1e24'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, 40); ctx.lineTo(x, 440); ctx.stroke(); });
+      sparkles.forEach(s => {
+        const x = laneX[s.lane];
+        ctx.fillStyle = '#5a86ab'; ctx.shadowColor = 'rgba(90,134,171,0.6)'; ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(x, s.y - 7); ctx.lineTo(x + 5, s.y); ctx.lineTo(x, s.y + 7); ctx.lineTo(x - 5, s.y); ctx.closePath();
+        ctx.fill(); ctx.shadowBlur = 0;
+      });
+      drawMica(laneX[playerLane], 400, 1, '#e9e7e2');
+      drawBar('Chispas: ' + score, score, Math.max(score, 10), '#5a86ab');
+
+      if (elapsed >= duration && !finished){ finished = true; onComplete(score); return; }
+      rafId = requestAnimationFrame(loop);
+    }
+    startGameScreen();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* --- 2. Avalancha: esquivar notificaciones que caen --- */
+  function gameAvalancha(onComplete){
+    setCaption('Esquiva las notificaciones que caen');
+    showControls('Horizontal');
+    currentMode = 'hold';
+    let playerX = 160, notifs = [], spawnTimer = 0, elapsed = 0, calma = 100, last = null, finished = false, flash = 0;
+    const duration = 11000;
+
+    function loop(ts){
+      if (last === null) last = ts;
+      const dt = ts - last; last = ts; elapsed += dt; spawnTimer += dt;
+      if (flash > 0) flash -= dt;
+
+      if (keys.left) playerX -= dt * 0.24;
+      if (keys.right) playerX += dt * 0.24;
+      playerX = clamp(playerX, 24, 296);
+
+      const interval = Math.max(360, 900 - elapsed * 0.05);
+      if (spawnTimer > interval){ spawnTimer = 0; notifs.push({ x: rand(30, 290), y: -14 }); }
+      const fallSpeed = 0.13 + elapsed * 0.000025;
+      notifs.forEach(n => n.y += dt * fallSpeed);
+      notifs = notifs.filter(n => {
+        if (Math.abs(n.x - playerX) < 22 && n.y > 405 && n.y < 448){ calma = Math.max(0, calma - 14); flash = 160; return false; }
+        return n.y < 470;
+      });
+
+      clearCanvas();
+      notifs.forEach(n => {
+        ctx.fillStyle = '#a4453f';
+        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(n.x - 12, n.y - 9, 24, 18, 4) : ctx.rect(n.x - 12, n.y - 9, 24, 18);
+        ctx.fill();
+        ctx.fillStyle = '#e9e7e2'; ctx.beginPath(); ctx.arc(n.x + 7, n.y - 7, 2.4, 0, Math.PI * 2); ctx.fill();
+      });
+      drawMica(playerX, 430, 1, '#e9e7e2');
+      drawBar('Calma', calma, 100, calma > 30 ? '#5a86ab' : '#a4453f');
+      if (flash > 0){ ctx.fillStyle = 'rgba(164,69,63,' + (flash / 160 * 0.25) + ')'; ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H); }
+
+      if ((elapsed >= duration || calma <= 0) && !finished){ finished = true; onComplete(); return; }
+      rafId = requestAnimationFrame(loop);
+    }
+    startGameScreen();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* --- 3. Encierro: el cuarto se encoge (rama aislarse) --- */
+  function gameEncierro(onComplete){
+    setCaption('El cuarto se encoge. Muévete.');
+    showControls('Dpad');
+    currentMode = 'hold';
+    let px = 160, py = 240, elapsed = 0, last = null, finished = false;
+    const duration = 10000;
+
+    function loop(ts){
+      if (last === null) last = ts;
+      const dt = ts - last; last = ts; elapsed += dt;
+      const t = clamp(elapsed / duration, 0, 1);
+      const margin = 22 + t * 110;
+      const left = margin, right = LOGICAL_W - margin;
+      const top = 50 + margin * 0.7, bottom = LOGICAL_H - 40 - margin * 0.7;
+
+      if (keys.left) px -= dt * 0.13;
+      if (keys.right) px += dt * 0.13;
+      if (keys.up) py -= dt * 0.13;
+      if (keys.down) py += dt * 0.13;
+      px = clamp(px, left + 8, right - 8);
+      py = clamp(py, top + 8, bottom - 8);
+
+      clearCanvas();
+      ctx.strokeStyle = '#2a2c33'; ctx.lineWidth = 1.4;
+      ctx.strokeRect(left, top, right - left, bottom - top);
+      ctx.fillStyle = '#5a86ab';
+      ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#4c4e56'; ctx.font = '10px Helvetica, Arial, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText('El espacio se cierra…', 18, 22);
+
+      if (elapsed >= duration && !finished){ finished = true; onComplete(); return; }
+      rafId = requestAnimationFrame(loop);
+    }
+    startGameScreen();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* --- 4. Ola de mensajes: esquivar burbujas (rama responder) --- */
+  function gameOlaMensajes(onComplete){
+    setCaption('Esquiva los mensajes');
+    showControls('Vertical');
+    currentMode = 'hold';
+    let playerY = 240, bubbles = [], spawnTimer = 0, elapsed = 0, energia = 100, last = null, finished = false, flash = 0;
+    const duration = 12000, fixedX = 160;
+
+    function loop(ts){
+      if (last === null) last = ts;
+      const dt = ts - last; last = ts; elapsed += dt; spawnTimer += dt;
+      if (flash > 0) flash -= dt;
+
+      if (keys.up) playerY -= dt * 0.22;
+      if (keys.down) playerY += dt * 0.22;
+      playerY = clamp(playerY, 70, 410);
+
+      const interval = Math.max(340, 850 - elapsed * 0.055);
+      if (spawnTimer > interval){
+        spawnTimer = 0;
+        const fromLeft = Math.random() < 0.5;
+        bubbles.push({ x: fromLeft ? -20 : 340, y: rand(80, 400), vx: (fromLeft ? 1 : -1) * (0.1 + elapsed * 0.00002) });
+      }
+      bubbles.forEach(b => b.x += b.vx * dt);
+      bubbles = bubbles.filter(b => {
+        if (Math.abs(b.x - fixedX) < 20 && Math.abs(b.y - playerY) < 20){ energia = Math.max(0, energia - 16); flash = 160; return false; }
+        return b.x > -40 && b.x < 360;
+      });
+
+      clearCanvas();
+      bubbles.forEach(b => {
+        ctx.fillStyle = '#a4453f';
+        ctx.beginPath(); ctx.arc(b.x, b.y, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(b.x - 3, b.y + 8); ctx.lineTo(b.x - 8, b.y + 15); ctx.lineTo(b.x + 2, b.y + 9); ctx.closePath(); ctx.fill();
+      });
+      drawMica(fixedX, playerY + 18, 1, '#e9e7e2');
+      drawBar('Energía', energia, 100, energia > 30 ? '#5a86ab' : '#a4453f');
+      if (flash > 0){ ctx.fillStyle = 'rgba(164,69,63,' + (flash / 160 * 0.25) + ')'; ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H); }
+
+      if ((elapsed >= duration || energia <= 0) && !finished){ finished = true; onComplete(); return; }
+      rafId = requestAnimationFrame(loop);
+    }
+    startGameScreen();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* --- 5. Acercarse: caminar hacia el personaje de confianza --- */
+  function gameAcercarse(onComplete, name){
+    setCaption('Acércate a ' + name);
+    showControls('Dpad');
+    currentMode = 'hold';
+    let px = 50, py = 240, npc = { x: 270, y: 240 }, elapsed = 0, last = null, finished = false, success = false, successTimer = 0;
+    const maxDuration = 16000;
+
+    function loop(ts){
+      if (last === null) last = ts;
+      const dt = ts - last; last = ts; elapsed += dt;
+
+      if (!success){
+        if (keys.left) px -= dt * 0.13;
+        if (keys.right) px += dt * 0.13;
+        if (keys.up) py -= dt * 0.13;
+        if (keys.down) py += dt * 0.13;
+        px = clamp(px, 28, 292);
+        py = clamp(py, 60, 420);
+        const dist = Math.hypot(px - npc.x, py - npc.y);
+        if (dist < 26){ success = true; }
+      } else {
+        successTimer += dt;
+      }
+
+      clearCanvas();
+      ctx.fillStyle = '#4c4e56'; ctx.font = '10px Helvetica, Arial, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(success ? '¡La encontraste!' : 'Camina hacia ' + name, 18, 22);
+      drawMica(npc.x, npc.y, 1, '#83858c');
+      ctx.fillStyle = '#83858c'; ctx.font = '10px Helvetica, Arial, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(name, npc.x, npc.y + 34);
+      drawMica(px, py, 1, success ? '#5a86ab' : '#e9e7e2');
+
+      if ((success && successTimer > 500) || elapsed > maxDuration){
+        if (!finished){ finished = true; onComplete(); return; }
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+    startGameScreen();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* ============ FLUJO DE LA HISTORIA ============ */
+  function startGameFlow(){
+    showText('mirror', ["Mica ensaya frente al espejo los pasos de toda la semana."], 0, () => {
+      gameDance((score) => {
+        showText('mirror', ["Sube el video bailando. Se siente ligera, por fin mostrándose tal como es."], 0, () => {
+          showChoices('phone',
+            ["A la mañana siguiente el teléfono no para de vibrar.", "Recortaron su peor fotograma. Ya circula en tres grupos."],
+            [
+              { label: 'Borrar todo y desaparecer', value: 'aislarse' },
+              { label: 'Responder y defenderse', value: 'responder' },
+              { label: 'Contarle a alguien de confianza', value: 'ayuda' }
+            ],
+            (value) => {
+              // Antes de la decisión, un momento de agobio jugable
+              gameAvalancha(() => {
+                state.decision1 = value;
+                showBranchDiagram('decision1', value, () => routeBranch(value));
+              });
+            }
+          );
+        });
+      }, { duration: 9000 });
+    });
+  }
+
+  function routeBranch(value){
+    if (value === 'aislarse') return branchAislarse();
+    if (value === 'responder') return branchResponder();
+    return branchAyuda();
+  }
+
+  function branchAislarse(){
+    showText('isolation', ["Borra la cuenta antes de pensarlo dos veces."], 0, () => {
+      gameEncierro(() => {
+        showText('isolation', ["Deja de aceptar invitaciones. La música ahora la escucha sola, con la puerta cerrada."], 0, () => {
+          showFinalScreen({
+            icon: 'isolation', final: 'Aislamiento',
+            endingText: "Mica aprendió a ocupar menos espacio. Dejó de ser la chica que bailaba sin miedo — y empezó a ser, sobre todo, alguien que no quiere que la vean."
+          });
+        });
+      });
+    });
+  }
+
+  function branchResponder(){
+    showText('conflict', ["Escribe una respuesta filosa y la publica."], 0, () => {
+      gameOlaMensajes(() => {
+        showText('conflict', ["Ya nadie recuerda cómo empezó — solo que sigue. Mica revisa el teléfono por vigilancia, no por costumbre."], 0, () => {
+          showFinalScreen({
+            icon: 'conflict', final: 'Conflicto',
+            endingText: "La pelea nunca terminó; solo cambió de forma. Mica ya no recuerda cuándo fue la última vez que bailó solo por bailar."
+          });
+        });
+      });
+    });
+  }
+
+  function branchAyuda(){
+    showChoices('support', ["Piensa en quién no la va a mirar distinto después de esto."],
+      [
+        { label: 'Un amigo cercano', value: 'amigo' },
+        { label: 'Un familiar', value: 'familiar' },
+        { label: 'Un profesor', value: 'profesor' }
+      ],
+      (sub) => {
+        state.subDecision = sub;
+        showBranchDiagram('subDecision', sub, () => {
+          const names = { amigo: 'Valentina', familiar: 'su hermano', profesor: 'la profesora Rojas' };
+          const aperturas = {
+            amigo: '«Necesito contarte algo» — le manda un audio a Valentina antes de arrepentirse.',
+            familiar: 'Toca la puerta de su hermano mayor y se sienta en el borde de la cama sin decir nada.',
+            profesor: 'Se queda después de clase hasta que el aula se vacía y solo queda la profesora Rojas.'
+          };
+          showText('support', [aperturas[sub]], 0, () => {
+            gameAcercarse(() => {
+              showText('support', ["Le muestra el teléfono. La otra persona no dice «no es para tanto» — solo la mira, en silencio.", "Armar un plan juntas es más simple de lo que esperaba: guardar capturas, hablar con la escuela."], 0, () => {
+                gameDance(() => {
+                  showFinalScreen({
+                    icon: 'recovery', final: 'Recuperación',
+                    endingText: "Mica no olvida lo que pasó, pero deja de cargarlo sola. Vuelve a compartir lo que quiere, cuando quiere — y ya no cabe en un video viral."
+                  });
+                }, { duration: 7000, caption: 'Vuelve a bailar, sin miedo' });
+              });
+            }, names[sub]);
+          });
+        });
+      }
+    );
+  }
+
+  // Arranque
+  startGameFlow();
+})();
+</script>
+</body>
+</html>
