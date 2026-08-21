@@ -67,7 +67,7 @@ La IA fue utilizada como apoyo durante el proceso de desarrollo, mientras que la
 
  Capturas de pantalla
 
- Pantalla inicial
+ Pantalla Jgabilidad
 
 ![Pantalla inicial](imagenes/pantalla-inicial.png)
 
