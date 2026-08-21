@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Come Sano - El Cazador de Nutrientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0b3d2e;
+    --bg2:#145c44;
+    --accent:#ffce45;
+    --wall:#1f7a52;
+    --wall-edge:#2fae7c;
+    --path:#0e4a37;
+    --panel:#0e3327;
+    --danger:#ff5d5d;
+    --good:#7CFC00;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    font-family:'Fredoka',system-ui,sans-serif;
+    background:radial-gradient(circle at 50% 0%, var(--bg2), var(--bg1) 70%);
+    color:#fff;
+    overflow-x:hidden;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:640px;
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:12px 12px 24px;
+  }
+  h1{
+    font-size:1.6rem;
+    margin:8px 0 2px;
+    text-align:center;
+    color:var(--accent);
+    text-shadow:0 2px 0 rgba(0,0,0,.3);
+  }
+  .subtitle{
+    text-align:center;
+    font-size:.85rem;
+    opacity:.85;
+    margin-bottom:10px;
+  }
+  .screen{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .hidden{display:none !important;}
+
+  .card{
+    background:var(--panel);
+    border:3px solid var(--wall-edge);
+    border-radius:18px;
+    padding:18px 16px;
+    width:100%;
+    max-width:520px;
+    box-shadow:0 8px 0 rgba(0,0,0,.25);
+  }
+  .card h2{margin-top:0;color:var(--accent);}
+  .card ul{padding-left:1.2em;line-height:1.6;font-size:.95rem;}
+  .card p{line-height:1.5;font-size:.95rem;}
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:12px 0;
+    justify-content:center;
+  }
+  .legend span{
+    background:rgba(255,255,255,.07);
+    border-radius:12px;
+    padding:6px 10px;
+    font-size:.85rem;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  button{
+    font-family:inherit;
+    font-weight:700;
+    font-size:1rem;
+    border:none;
+    border-radius:14px;
+    padding:12px 22px;
+    cursor:pointer;
+    background:var(--accent);
+    color:#1a1a1a;
+    box-shadow:0 5px 0 #b5860a;
+    transition:transform .05s;
+  }
+  button:active{transform:translateY(4px);box-shadow:0 1px 0 #b5860a;}
+  .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+  .secondary{background:#3a8f6c;color:#fff;box-shadow:0 5px 0 #205c44;}
+
+  /* HUD */
+  #hud{
+    width:100%;
+    max-width:520px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+    font-size:.95rem;
+    padding:0 4px;
+  }
+  #hud .stat{display:flex;align-items:center;gap:6px;font-weight:700;}
+  #lives{display:flex;gap:3px;}
+  #powerBarWrap{
+    width:100%;max-width:520px;height:8px;
+    background:rgba(255,255,255,.1);
+    border-radius:6px;overflow:hidden;margin-bottom:8px;
+  }
+  #powerBar{height:100%;width:0%;background:linear-gradient(90deg,#ffce45,#ff9d3d);transition:width .1s linear;}
+
+  #canvasWrap{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    aspect-ratio:1/1;
+    border-radius:14px;
+    overflow:hidden;
+    border:4px solid var(--wall-edge);
+    box-shadow:0 6px 0 rgba(0,0,0,.3);
+  }
+  canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    background:var(--path);
+  }
+  #tip{
+    position:absolute;
+    left:50%;
+    bottom:10px;
+    transform:translate(-50%,20px);
+    background:rgba(0,0,0,.75);
+    color:#ffe;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:.8rem;
+    max-width:88%;
+    text-align:center;
+    opacity:0;
+    transition:opacity .3s, transform .3s;
+    pointer-events:none;
+  }
+  #tip.show{opacity:1;transform:translate(-50%,0);}
+
+  /* Touch controls */
+  #controls{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:60px 60px 60px;
+    grid-template-rows:60px 60px 60px;
+    gap:6px;
+    user-select:none;
+  }
+  #controls button{
+    width:60px;height:60px;
+    padding:0;
+    font-size:1.4rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ctl-up{grid-column:2;grid-row:1;}
+  .ctl-left{grid-column:1;grid-row:2;}
+  .ctl-down{grid-column:2;grid-row:2;}
+  .ctl-right{grid-column:3;grid-row:2;}
+  .ctl-empty{visibility:hidden;}
+
+  #endTitle{font-size:1.5rem;margin-bottom:4px;}
+  #endScore{font-size:1.1rem;margin-bottom:10px;}
+
+  footer{
+    margin-top:16px;
+    font-size:.7rem;
+    opacity:.6;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>🍏 Come Sano: El Cazador de Nutrientes</h1>
+  <div class="subtitle">Prototipo educativo — recoge comida saludable, esquiva la comida chatarra</div>
+
+  <!-- START SCREEN -->
+  <div id="startScreen" class="screen">
+    <div class="card">
+      <h2>¿Cómo se juega?</h2>
+      <p>Mueve tu personaje por el laberinto y recolecta <strong>toda</strong> la comida saludable antes de que la comida chatarra te atrape.</p>
+      <div class="legend">
+        <span>🍎 Tú</span>
+        <span>🥦🍇🥕🍓 Comida saludable (+puntos)</span>
+        <span>🍉 Súper fruta: poder especial</span>
+        <span>🍔🍟🌭 Comida chatarra (¡peligro!)</span>
+      </div>
+      <ul>
+        <li>Usa las flechas / WASD, o los botones táctiles.</li>
+        <li>Si comes la <strong>sandía 🍉</strong>, por unos segundos podrás comerte a la comida chatarra en vez de que ella te coma a ti.</li>
+        <li>Tienes 3 vidas. ¡Gana comiendo toda la comida saludable del mapa!</li>
+      </ul>
+      <div class="btn-row">
+        <button id="startBtn">▶ Jugar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="screen hidden">
+    <div id="hud">
+      <div class="stat">⭐ <span id="scoreVal">0</span></div>
+      <div class="stat">🥗 <span id="dotsVal">0</span></div>
+      <div class="stat" id="lives"></div>
+    </div>
+    <div id="powerBarWrap"><div id="powerBar"></div></div>
+    <div id="canvasWrap">
+      <canvas id="gameCanvas"></canvas>
+      <div id="tip"></div>
+    </div>
+    <div id="controls">
+      <div class="ctl-empty"></div>
+      <button class="ctl-up" data-dir="up">▲</button>
+      <div class="ctl-empty"></div>
+      <button class="ctl-left" data-dir="left">◀</button>
+      <button class="ctl-down" data-dir="down">▼</button>
+      <button class="ctl-right" data-dir="right">▶</button>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div id="endScreen" class="screen hidden">
+    <div class="card" style="text-align:center;">
+      <div id="endTitle"></div>
+      <div id="endScore"></div>
+      <p id="endMsg" style="font-size:.9rem;"></p>
+      <div class="btn-row">
+        <button id="retryBtn">🔁 Jugar de nuevo</button>
+        <button id="menuBtn" class="secondary">🏠 Menú</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Prototipo funcional — MDA: mecánica de recolección + persecución en laberinto</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- CONFIG ----------
+  const CELL_COLS = 11, CELL_ROWS = 11;          // maze cells
+  const MAZE_W = CELL_COLS*2+1, MAZE_H = CELL_ROWS*2+1; // tile grid (23x23)
+  const PLAYER_SPEED = 4.6;   // tiles per second
+  const GHOST_SPEED = 3.8;
+  const FRIGHT_SPEED = 2.6;
+  const EATEN_SPEED = 7.5;
+  const FRIGHT_DURATION = 7000; // ms
+  const START_DELAY = 1200; // ms before ghosts move
+  const GHOST_COUNT = 3;
+
+  const DOT_EMOJIS = ['🥦','🍇','🥕','🍓'];
+  const POWER_EMOJI = '🍉';
+  const PLAYER_EMOJI = '🍏';
+  const GHOST_EMOJIS = ['🍔','🍟','🌭'];
+  const FRIGHT_EMOJI = '😨';
+  const EATEN_EMOJI = '👀';
+
+  const TIPS = {
+    '🥦':'El brócoli es rico en vitaminas y fibra.',
+    '🍇':'Las uvas tienen antioxidantes que cuidan tu cuerpo.',
+    '🥕':'Las zanahorias ayudan a cuidar tu vista.',
+    '🍓':'Las fresas te dan vitamina C para tus defensas.',
+    '🍉':'La sandía te da energía y te mantiene hidratado.'
+  };
+
+  // ---------- STATE ----------
+  let maze = [];       // 0 = path, 1 = wall
+  let dotGrid = [];    // 0 none, 1 dot, 2 power
+  let dotEmojiGrid = []; // which emoji per dot tile
+  let totalDots = 0, dotsEaten = 0, score = 0, lives = 3;
+  let player, ghosts = [];
+  let frightTimer = 0, frightActive = false;
+  let gameRunning = false, gameStartTime = 0;
+  let TILE = 22;
+  let animT = 0;
+
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas(){
+    const wrap = document.getElementById('canvasWrap');
+    const size = wrap.clientWidth;
+    canvas.width = MAZE_W * Math.floor(size / MAZE_W);
+    canvas.height = MAZE_H * Math.floor(size / MAZE_W);
+    TILE = canvas.width / MAZE_W;
+  }
+  window.addEventListener('resize', ()=>{ if(gameRunning){ resizeCanvas(); } });
+
+  // ---------- MAZE GENERATION ----------
+  function generateMaze(){
+    maze = Array.from({length:MAZE_H}, ()=>Array(MAZE_W).fill(1));
+    const visited = Array.from({length:CELL_ROWS}, ()=>Array(CELL_COLS).fill(false));
+
+    function carve(cx,cy){
+      visited[cy][cx] = true;
+      maze[cy*2+1][cx*2+1] = 0;
+      const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
+      for(let i=dirs.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [dirs[i],dirs[j]] = [dirs[j],dirs[i]];
+      }
+      for(const [dx,dy] of dirs){
+        const nx=cx+dx, ny=cy+dy;
+        if(nx>=0 && nx<CELL_COLS && ny>=0 && ny<CELL_ROWS && !visited[ny][nx]){
+          maze[cy*2+1+dy][cx*2+1+dx] = 0;
+          carve(nx,ny);
+        }
+      }
+    }
+    carve(0,0);
+
+    // add loops so ghosts don't trap the player unfairly
+    for(let y=1;y<MAZE_H-1;y++){
+      for(let x=1;x<MAZE_W-1;x++){
+        if(maze[y][x]===1){
+          // wall between two horizontally or vertically adjacent path cells
+          if(x%2===0 && y%2===1 && maze[y][x-1]===0 && maze[y][x+1]===0){
+            if(Math.random() < 0.18) maze[y][x] = 0;
+          } else if(y%2===0 && x%2===1 && maze[y-1][x]===0 && maze[y+1][x]===0){
+            if(Math.random() < 0.18) maze[y][x] = 0;
+          }
+        }
+      }
+    }
+  }
+
+  function canWalk(r,c){
+    return r>=0 && r<MAZE_H && c>=0 && c<MAZE_W && maze[r][c]===0;
+  }
+
+  function neighbors(r,c){
+    const out = [];
+    const dirs = [[-1,0,'up'],[1,0,'down'],[0,-1,'left'],[0,1,'right']];
+    for(const [dr,dc,name] of dirs){
+      if(canWalk(r+dr,c+dc)) out.push({r:r+dr,c:c+dc,dr,dc,name});
+    }
+    return out;
+  }
+
+  function bfsDistances(sr,sc){
+    const dist = Array.from({length:MAZE_H}, ()=>Array(MAZE_W).fill(Infinity));
+    dist[sr][sc] = 0;
+    const q = [[sr,sc]];
+    let qi = 0;
+    while(qi < q.length){
+      const [r,c] = q[qi++];
+      for(const n of neighbors(r,c)){
+        if(dist[n.r][n.c] === Infinity){
+          dist[n.r][n.c] = dist[r][c] + 1;
+          q.push([n.r,n.c]);
+        }
+      }
+    }
+    return dist;
+  }
+
+  function bfsPath(sr,sc,tr,tc){
+    if(sr===tr && sc===tc) return [];
+    const dist = Array.from({length:MAZE_H}, ()=>Array(MAZE_W).fill(-1));
+    const parent = {};
+    dist[sr][sc] = 0;
+    const q = [[sr,sc]];
+    let qi = 0;
+    while(qi < q.length){
+      const [r,c] = q[qi++];
+      if(r===tr && c===tc) break;
+      for(const n of neighbors(r,c)){
+        if(dist[n.r][n.c] === -1){
+          dist[n.r][n.c] = dist[r][c] + 1;
+          parent[n.r+','+n.c] = [r,c];
+          q.push([n.r,n.c]);
+        }
+      }
+    }
+    if(dist[tr][tc] === -1) return null;
+    const path = [];
+    let cur = [tr,tc];
+    while(cur[0]!==sr || cur[1]!==sc){
+      path.push(cur);
+      cur = parent[cur[0]+','+cur[1]];
+    }
+    path.reverse();
+    return path; // list of [r,c] from step 1 to target
+  }
+
+  // ---------- SETUP LEVEL ----------
+  function setupLevel(){
+    generateMaze();
+    dotGrid = Array.from({length:MAZE_H}, ()=>Array(MAZE_W).fill(0));
+    dotEmojiGrid = Array.from({length:MAZE_H}, ()=>Array(MAZE_W).fill(null));
+
+    const pathTiles = [];
+    for(let r=0;r<MAZE_H;r++){
+      for(let c=0;c<MAZE_W;c++){
+        if(maze[r][c]===0){
+          pathTiles.push([r,c]);
+          dotGrid[r][c] = 1;
+          dotEmojiGrid[r][c] = DOT_EMOJIS[Math.floor(Math.random()*DOT_EMOJIS.length)];
+        }
+      }
+    }
+
+    const startR = 1, startC = 1;
+    dotGrid[startR][startC] = 0;
+
+    // power pellets at dead ends
+    const deadEnds = pathTiles.filter(([r,c]) => neighbors(r,c).length===1 && !(r===startR&&c===startC));
+    const distFromStart = bfsDistances(startR,startC);
+    deadEnds.sort((a,b)=> distFromStart[b[0]][b[1]] - distFromStart[a[0]][a[1]]);
+    const powerSpots = deadEnds.slice(0, Math.min(4, deadEnds.length));
+    for(const [r,c] of powerSpots){ dotGrid[r][c] = 2; }
+
+    // ghost start tiles: farthest reachable tiles from player, spaced apart
+    const sorted = pathTiles.slice().sort((a,b)=> distFromStart[b[0]][b[1]] - distFromStart[a[0]][a[1]]);
+    const ghostStarts = [];
+    for(const t of sorted){
+      if(ghostStarts.length >= GHOST_COUNT) break;
+      const farEnough = ghostStarts.every(g => Math.abs(g[0]-t[0])+Math.abs(g[1]-t[1]) > 4);
+      if(farEnough) ghostStarts.push(t);
+    }
+    while(ghostStarts.length < GHOST_COUNT && sorted.length){
+      ghostStarts.push(sorted[ghostStarts.length % sorted.length]);
+    }
+    for(const [r,c] of ghostStarts){ dotGrid[r][c] = 0; }
+
+    totalDots = 0;
+    for(let r=0;r<MAZE_H;r++) for(let c=0;c<MAZE_W;c++) if(dotGrid[r][c]>0) totalDots++;
+    dotsEaten = 0;
+
+    player = {
+      r:startR, c:startC, progress:0,
+      dir:{dr:0,dc:0}, pending:{dr:0,dc:0},
+      home:{r:startR,c:startC}
+    };
+
+    ghosts = ghostStarts.map((pos,i)=>({
+      r:pos[0], c:pos[1], progress:0,
+      dir:{dr:0,dc:0},
+      home:{r:pos[0],c:pos[1]},
+      state:'normal', // normal | frightened | eaten
+      emoji: GHOST_EMOJIS[i % GHOST_EMOJIS.length],
+      bob: Math.random()*Math.PI*2
+    }));
+
+    score = 0; lives = 3;
+    frightActive = false; frightTimer = 0;
+    updateHUD();
+  }
+
+  // ---------- INPUT ----------
+  const keyMap = {
+    ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right',
+    w:'up', s:'down', a:'left', d:'right', W:'up', S:'down', A:'left', D:'right'
+  };
+  const dirVec = { up:{dr:-1,dc:0}, down:{dr:1,dc:0}, left:{dr:0,dc:-1}, right:{dr:0,dc:1} };
+
+  function setPending(name){
+    if(!gameRunning) return;
+    player.pending = dirVec[name];
+  }
+
+  window.addEventListener('keydown', (e)=>{
+    if(keyMap[e.key]){ setPending(keyMap[e.key]); e.preventDefault(); }
+  });
+
+  document.querySelectorAll('#controls button[data-dir]').forEach(btn=>{
+    const handler = (e)=>{ e.preventDefault(); setPending(btn.dataset.dir); };
+    btn.addEventListener('touchstart', handler, {passive:false});
+    btn.addEventListener('mousedown', handler);
+  });
+
+  // ---------- GAME LOOP ----------
+  let lastTime = null;
+  function loop(ts){
+    if(!gameRunning) return;
+    if(lastTime===null) lastTime = ts;
+    let dt = (ts - lastTime) / 1000;
+    if(dt > 0.06) dt = 0.06; // clamp for tab-switch lag
+    lastTime = ts;
+
+    const elapsedSinceStart = ts - gameStartTime;
+    const ghostsActive = elapsedSinceStart > START_DELAY;
+
+    updatePlayer(dt);
+    if(ghostsActive){
+      for(const g of ghosts) updateGhost(g, dt);
+    }
+    handleFright(dt);
+    checkCollisions();
+    animT += dt;
+
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  function updatePlayer(dt){
+    if(player.progress===0){
+      if(player.pending.dr || player.pending.dc){
+        if(canWalk(player.r+player.pending.dr, player.c+player.pending.dc)){
+          player.dir = player.pending;
+        }
+      }
+      if(!canWalk(player.r+player.dir.dr, player.c+player.dir.dc)){
+        player.dir = {dr:0,dc:0};
+      }
+    }
+    if(player.dir.dr || player.dir.dc){
+      player.progress += PLAYER_SPEED*dt;
+      if(player.progress >= 1){
+        player.progress = 0;
+        player.r += player.dir.dr;
+        player.c += player.dir.dc;
+        onPlayerEnterTile();
+      }
+    }
+  }
+
+  function onPlayerEnterTile(){
+    const val = dotGrid[player.r][player.c];
+    if(val===1){
+      dotGrid[player.r][player.c] = 0;
+      score += 10;
+      dotsEaten++;
+      if(Math.random() < 0.15){
+        const emoji = dotEmojiGrid[player.r][player.c];
+        showTip(emoji);
+      }
+      updateHUD();
+      if(dotsEaten >= totalDots){ endGame(true); }
+    } else if(val===2){
+      dotGrid[player.r][player.c] = 0;
+      score += 50;
+      dotsEaten++;
+      activateFright();
+      showTip('🍉');
+      updateHUD();
+      if(dotsEaten >= totalDots){ endGame(true); }
+    }
+  }
+
+  function activateFright(){
+    frightActive = true;
+    frightTimer = FRIGHT_DURATION;
+    for(const g of ghosts){
+      if(g.state !== 'eaten'){
+        g.state = 'frightened';
+        g.dir = {dr:-g.dir.dr, dc:-g.dir.dc}; // reverse on scare, classic pacman feel
+      }
+    }
+  }
+
+  function handleFright(dt){
+    if(!frightActive) return;
+    frightTimer -= dt*1000;
+    const pct = Math.max(0, frightTimer / FRIGHT_DURATION);
+    document.getElementById('powerBar').style.width = (pct*100)+'%';
+    if(frightTimer <= 0){
+      frightActive = false;
+      document.getElementById('powerBar').style.width = '0%';
+      for(const g of ghosts){ if(g.state==='frightened') g.state='normal'; }
+    }
+  }
+
+  function updateGhost(g, dt){
+    if(g.progress===0){
+      let speed;
+      if(g.state==='eaten'){
+        speed = EATEN_SPEED;
+        if(g.r===g.home.r && g.c===g.home.c){
+          g.state = 'normal';
+        }
+      } else if(g.state==='frightened'){
+        speed = FRIGHT_SPEED;
+      } else {
+        speed = GHOST_SPEED;
+      }
+      g._speed = speed;
+
+      const opts = neighbors(g.r,g.c);
+      let choice = null;
+
+      if(g.state==='eaten'){
+        const path = bfsPath(g.r,g.c,g.home.r,g.home.c);
+        if(path && path.length){
+          const [nr,nc] = path[0];
+          choice = {dr:nr-g.r, dc:nc-g.c};
+        }
+      } else if(g.state==='frightened'){
+        const nonReverse = opts.filter(o => !(o.dr===-g.dir.dr && o.dc===-g.dir.dc));
+        const pool = nonReverse.length ? nonReverse : opts;
+        // prefer moves that increase distance from player
+        pool.sort((a,b)=>{
+          const da = Math.abs(a.r-player.r)+Math.abs(a.c-player.c);
+          const db = Math.abs(b.r-player.r)+Math.abs(b.c-player.c);
+          return db - da;
+        });
+        const topPicks = pool.slice(0, Math.max(1, Math.ceil(pool.length/2)));
+        const pick = topPicks[Math.floor(Math.random()*topPicks.length)];
+        choice = {dr:pick.dr, dc:pick.dc};
+      } else {
+        const path = bfsPath(g.r,g.c,player.r,player.c);
+        if(path && path.length){
+          const [nr,nc] = path[0];
+          choice = {dr:nr-g.r, dc:nc-g.c};
+        } else {
+          const pick = opts[Math.floor(Math.random()*opts.length)];
+          if(pick) choice = {dr:pick.dr, dc:pick.dc};
+        }
+      }
+
+      if(choice) g.dir = choice;
+    }
+
+    if(g.dir.dr || g.dir.dc){
+      g.progress += (g._speed||GHOST_SPEED)*dt;
+      if(g.progress >= 1){
+        g.progress = 0;
+        g.r += g.dir.dr;
+        g.c += g.dir.dc;
+      }
+    }
+  }
+
+  function checkCollisions(){
+    const px = (player.c + player.dir.dc*player.progress);
+    const py = (player.r + player.dir.dr*player.progress);
+    for(const g of ghosts){
+      if(g.state==='eaten') continue;
+      const gx = (g.c + g.dir.dc*g.progress);
+      const gy = (g.r + g.dir.dr*g.progress);
+      const dist = Math.hypot(px-gx, py-gy);
+      if(dist < 0.55){
+        if(g.state==='frightened'){
+          g.state = 'eaten';
+          g.progress = 0;
+          score += 200;
+          updateHUD();
+          showTip(null, '¡Comida chatarra derrotada! +200');
+        } else {
+          loseLife();
+        }
+      }
+    }
+  }
+
+  function loseLife(){
+    lives--;
+    updateHUD();
+    if(lives <= 0){
+      endGame(false);
+      return;
+    }
+    player.r = player.home.r; player.c = player.home.c;
+    player.progress = 0; player.dir = {dr:0,dc:0}; player.pending={dr:0,dc:0};
+    for(const g of ghosts){
+      g.r = g.home.r; g.c = g.home.c; g.progress = 0; g.dir={dr:0,dc:0}; g.state='normal';
+    }
+    frightActive = false; frightTimer = 0;
+    document.getElementById('powerBar').style.width = '0%';
+    gameStartTime = performance.now();
+  }
+
+  // ---------- RENDER ----------
+  function render(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--path');
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // walls
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--wall');
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--wall-edge');
+    ctx.lineWidth = Math.max(1, TILE*0.06);
+    for(let r=0;r<MAZE_H;r++){
+      for(let c=0;c<MAZE_W;c++){
+        if(maze[r][c]===1){
+          const x=c*TILE, y=r*TILE;
+          ctx.fillRect(x,y,TILE,TILE);
+        }
+      }
+    }
+
+    // dots
+    const dotFont = Math.floor(TILE*0.62);
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    for(let r=0;r<MAZE_H;r++){
+      for(let c=0;c<MAZE_W;c++){
+        const v = dotGrid[r][c];
+        if(v===1){
+          ctx.font = dotFont+'px sans-serif';
+          ctx.fillText(dotEmojiGrid[r][c], c*TILE+TILE/2, r*TILE+TILE/2);
+        } else if(v===2){
+          const pulse = 1 + 0.12*Math.sin(animT*6);
+          ctx.save();
+          ctx.translate(c*TILE+TILE/2, r*TILE+TILE/2);
+          ctx.scale(pulse,pulse);
+          ctx.font = Math.floor(TILE*0.85)+'px sans-serif';
+          ctx.fillText(POWER_EMOJI, 0, 0);
+          ctx.restore();
+        }
+      }
+    }
+
+    // player
+    const px = (player.c + player.dir.dc*player.progress)*TILE + TILE/2;
+    const py = (player.r + player.dir.dr*player.progress)*TILE + TILE/2;
+    ctx.save();
+    const chomp = 1 + 0.08*Math.sin(animT*14);
+    ctx.translate(px,py);
+    ctx.scale(chomp,chomp);
+    ctx.font = Math.floor(TILE*0.85)+'px sans-serif';
+    ctx.fillText(PLAYER_EMOJI, 0, 0);
+    ctx.restore();
+
+    // ghosts
+    for(const g of ghosts){
+      const gx = (g.c + g.dir.dc*g.progress)*TILE + TILE/2;
+      const gy = (g.r + g.dir.dr*g.progress)*TILE + TILE/2 + Math.sin(animT*5 + g.bob)*TILE*0.05;
+      let emoji = g.emoji;
+      if(g.state==='eaten') emoji = EATEN_EMOJI;
+      else if(g.state==='frightened'){
+        const blinking = frightTimer < 2000 && Math.floor(animT*8)%2===0;
+        emoji = blinking ? g.emoji : FRIGHT_EMOJI;
+      }
+      ctx.save();
+      if(g.state==='frightened'){
+        ctx.globalAlpha = 0.55;
+        ctx.beginPath();
+        ctx.fillStyle = '#5aa8ff';
+        ctx.arc(gx,gy,TILE*0.42,0,Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      ctx.font = Math.floor(TILE*0.8)+'px sans-serif';
+      ctx.fillText(emoji, gx, gy);
+      ctx.restore();
+    }
+  }
+
+  // ---------- HUD / TIPS ----------
+  function updateHUD(){
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('dotsVal').textContent = (totalDots - dotsEaten);
+    const livesEl = document.getElementById('lives');
+    livesEl.innerHTML = '';
+    for(let i=0;i<lives;i++){
+      const s = document.createElement('span');
+      s.textContent = '🍏';
+      livesEl.appendChild(s);
+    }
+  }
+
+  let tipTimeout = null;
+  function showTip(emoji, customText){
+    const tipEl = document.getElementById('tip');
+    const text = customText || TIPS[emoji];
+    if(!text) return;
+    tipEl.textContent = text;
+    tipEl.classList.add('show');
+    clearTimeout(tipTimeout);
+    tipTimeout = setTimeout(()=> tipEl.classList.remove('show'), 2200);
+  }
+
+  // ---------- SCREENS ----------
+  function showScreen(id){
+    ['startScreen','gameScreen','endScreen'].forEach(s=>{
+      document.getElementById(s).classList.toggle('hidden', s!==id);
+    });
+  }
+
+  function startGame(){
+    setupLevel();
+    showScreen('gameScreen');
+    resizeCanvas();
+    gameRunning = true;
+    lastTime = null;
+    gameStartTime = performance.now();
+    requestAnimationFrame(loop);
+  }
+
+  function endGame(won){
+    gameRunning = false;
+    document.getElementById('endTitle').textContent = won ? '🎉 ¡Ganaste! Comiste todo saludable' : '💥 ¡La comida chatarra te atrapó!';
+    document.getElementById('endScore').textContent = 'Puntaje final: ' + score;
+    document.getElementById('endMsg').textContent = won
+      ? 'Elegiste alimentos saludables en cada paso. ¡Así se cuida el cuerpo!'
+      : 'Inténtalo de nuevo: esquiva la comida chatarra y usa la sandía para defenderte.';
+    showScreen('endScreen');
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('retryBtn').addEventListener('click', startGame);
+  document.getElementById('menuBtn').addEventListener('click', ()=> showScreen('startScreen'));
+
+  showScreen('startScreen');
+})();
+</script>
+</body>
+</html>
