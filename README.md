@@ -23,3 +23,9 @@ Videojuego de puzzle ambientado en La Paz. El jugador debe cavar túneles y cont
 Videojuego de estrategia y simulación financiera. El jugador comienza con 2000 Bs y debe tomar decisiones sobre cómo administrar su dinero, pudiendo invertir, apostar o realizar diferentes compras. El objetivo es alcanzar los 4500 Bs sin quedarse sin recursos.
 
 [Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/2000bs-la-ciudad-de-las-decisiones/)
+
+### Evo y Baldor: Misión en el CHAPARE
+
+Videojuego RPG top-down de exploración y resolución de acertijos matemáticos. El jugador debe explorar el Chapare, abrir cofres, conseguir herramientas y completar diferentes objetivos utilizando el equipo adecuado para cada situación.
+
+[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/)
