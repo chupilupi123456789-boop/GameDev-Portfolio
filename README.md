@@ -29,3 +29,9 @@ Videojuego de estrategia y simulación financiera. El jugador comienza con 2000 
 Videojuego RPG top-down de exploración y resolución de acertijos matemáticos. El jugador debe explorar el Chapare, abrir cofres, conseguir herramientas y completar diferentes objetivos utilizando el equipo adecuado para cada situación.
 
 [Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/)
+
+### Mica: Un video, muchos caminos
+
+Videojuego de aventura narrativa interactiva donde las decisiones del jugador determinan el camino de Mica a través de diferentes situaciones. Cada elección se complementa con un mini-juego de reflejos y movimiento que permite experimentar las consecuencias de la decisión tomada.
+
+[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/)
