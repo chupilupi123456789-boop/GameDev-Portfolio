@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saul Santiago Gutierrez Villacorta — Game Development Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#080a1c;
+    --bg-mid:#141032;
+    --bg-glow:#26144f;
+    --mint:#7CFFB2;
+    --sky:#6ec6ff;
+    --pink:#ff6ec7;
+    --text:#eef0fb;
+    --text-dim:#9a97c0;
+    --card:#12142e;
+    --card-border:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(circle at 15% 8%, rgba(126,255,178,.10), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(110,198,255,.14), transparent 45%),
+      radial-gradient(circle at 75% 85%, rgba(255,110,199,.10), transparent 45%),
+      linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-glow) 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    line-height:1.5;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  /* pixel dust decoration */
+  .dust{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:0;}
+  .dust span{position:absolute;width:3px;height:3px;background:var(--sky);border-radius:1px;}
+
+  header{padding:88px 0 56px;position:relative;z-index:1;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--mint);
+    border:1px solid rgba(124,255,178,.35);border-radius:999px;
+    padding:6px 14px;margin-bottom:28px;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint);}
+  h1.name{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;line-height:1.05;letter-spacing:-.01em;}
+  h1.name .accent{
+    background:linear-gradient(90deg,var(--mint),var(--sky) 55%,var(--pink));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .role{margin-top:14px;font-size:1.15rem;color:var(--text-dim);max-width:640px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px;}
+  .btn{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.92rem;
+    padding:12px 22px;border-radius:10px;text-decoration:none;
+    border:1px solid transparent;transition:transform .15s ease, border-color .15s ease;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:linear-gradient(90deg,var(--mint),var(--sky));color:#06121a;}
+  .btn-ghost{border-color:var(--card-border);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--sky);}
+
+  section{position:relative;z-index:1;padding:56px 0;border-top:1px solid var(--card-border);}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:32px;flex-wrap:wrap;}
+  .section-head h2{font-size:1.5rem;font-weight:700;}
+  .section-head .count{font-size:.85rem;color:var(--text-dim);font-family:'Space Grotesk',sans-serif;}
+
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+  @media(max-width:760px){.about-grid{grid-template-columns:1fr;}}
+  .about-card{
+    background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:26px 28px;
+  }
+  .about-card h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);margin-bottom:12px;}
+  .about-card p{color:#d3d1ea;font-size:.98rem;}
+  .stack-list{list-style:none;margin-top:8px;}
+  .stack-list li{display:flex;gap:10px;padding:6px 0;font-size:.92rem;color:#d3d1ea;}
+  .stack-list li b{color:var(--mint);font-family:'Space Grotesk',sans-serif;min-width:118px;display:inline-block;}
+
+  .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
+  .card{
+    background:var(--card);border:1px solid var(--card-border);border-radius:16px;
+    padding:24px;display:flex;flex-direction:column;gap:12px;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-4px);border-color:rgba(110,198,255,.4);box-shadow:0 12px 32px -12px rgba(110,198,255,.25);}
+  .card .tag{
+    align-self:flex-start;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;
+  }
+  .tag.arcade{background:rgba(124,255,178,.12);color:var(--mint);}
+  .tag.puzzle{background:rgba(110,198,255,.12);color:var(--sky);}
+  .tag.estrategia{background:rgba(255,209,102,.14);color:#ffd166;}
+  .tag.rpg{background:rgba(255,110,199,.14);color:var(--pink);}
+  .tag.aventura{background:rgba(190,150,255,.16);color:#c9a8ff;}
+  .card h3{font-size:1.08rem;}
+  .card p{color:var(--text-dim);font-size:.9rem;flex:1;}
+  .card .play{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.85rem;
+    color:var(--mint);text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  }
+  .card .play::after{content:"→";transition:transform .15s ease;}
+  .card .play:hover::after{transform:translateX(4px);}
+
+  footer{padding:48px 0 64px;text-align:center;color:var(--text-dim);font-size:.85rem;position:relative;z-index:1;}
+  footer a{color:var(--sky);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="dust" id="dust"></div>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Game Development Portfolio</div>
+    <h1 class="name">Saul Santiago<br><span class="accent">Gutierrez Villacorta</span></h1>
+    <p class="role">Prototipos y videojuegos construidos con HTML5, CSS3 y JavaScript puro — sin frameworks ni motores externos, jugables directo desde el navegador.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#juegos">Ver juegos</a>
+      <a class="btn btn-ghost" href="https://github.com/chupilupi123456789-boop/GameDev-Portfolio" target="_blank" rel="noopener">Ver repositorio en GitHub</a>
+    </div>
+  </header>
+
+  <section id="sobre-mi">
+    <div class="section-head"><h2>Sobre mí</h2></div>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>Enfoque</h3>
+        <p>Diseño y programación de videojuegos educativos. Me interesa crear videojuegos bien estructurados y mejorar mi manejo de la Inteligencia Artificial, una herramienta que ya tiene un gran impacto en la sociedad y en el desarrollo de software.</p>
+      </div>
+      <div class="about-card">
+        <h3>Stack técnico</h3>
+        <ul class="stack-list">
+          <li><b>HTML5</b> Estructura y Canvas API</li>
+          <li><b>CSS3</b> Estilos y diseño responsive</li>
+          <li><b>JavaScript</b> Lógica de juego e interactividad</li>
+          <li><b>GitHub Pages</b> Hosting de cada prototipo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="juegos">
+    <div class="section-head">
+      <h2>Galería de videojuegos</h2>
+      <span class="count">6 proyectos</span>
+    </div>
+    <div class="games">
+
+      <div class="card">
+        <span class="tag arcade">Arcade</span>
+        <h3>Come Sano: El Cazador de Nutrientes</h3>
+        <p>Versión educativa estilo Pac-Man. Recorre el laberinto recolectando comida saludable mientras evitas la comida chatarra.</p>
+        <a class="play" href="./games/come-sano-pacman/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+      <div class="card">
+        <span class="tag arcade">Arcade</span>
+        <h3>EcoClasifica: Recicla Correctamente</h3>
+        <p>Clasifica los residuos que caen en el contenedor correcto antes de que toquen el suelo. La velocidad aumenta con cada acierto.</p>
+        <a class="play" href="./games/ecoclasifica/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+      <div class="card">
+        <span class="tag puzzle">Puzzle</span>
+        <h3>MensInBlack La Paz</h3>
+        <p>Cava túneles y controla válvulas para guiar el agua desde la tubería hasta la tina del Agente Rodmy, superando distintos niveles.</p>
+        <a class="play" href="./games/mensinblack-lapaz/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+      <div class="card">
+        <span class="tag estrategia">Estrategia</span>
+        <h3>2000 Bs: La Ciudad de las Decisiones</h3>
+        <p>Simulación financiera: empieza con 2000 Bs y decide entre invertir, apostar o gastar para llegar a los 4500 Bs.</p>
+        <a class="play" href="./games/2000bs-la-ciudad-de-las-decisiones/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+      <div class="card">
+        <span class="tag rpg">RPG</span>
+        <h3>Evo y Baldor: Misión en el CHAPARE</h3>
+        <p>RPG top-down: resuelve acertijos matemáticos para conseguir herramientas y completar objetivos en el Chapare.</p>
+        <a class="play" href="./games/evo-baldor-chapare/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+      <div class="card">
+        <span class="tag aventura">Aventura</span>
+        <h3>Mica: Un video, muchos caminos</h3>
+        <p>Narrativa interactiva: cada decisión se juega con un mini-juego de reflejos distinto y lleva a un final diferente.</p>
+        <a class="play" href="./games/mica-un-video-muchos-caminos/" target="_blank" rel="noopener">Jugar</a>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    Hecho por Saul Santiago Gutierrez Villacorta — La Paz, Bolivia · <a href="https://github.com/chupilupi123456789-boop/GameDev-Portfolio" target="_blank" rel="noopener">Código en GitHub</a>
+  </footer>
+</div>
+
+<script>
+  // pixel dust scatter
+  const dust = document.getElementById('dust');
+  const colors = ['#6ec6ff','#7CFFB2','#ff6ec7'];
+  for(let i=0;i<28;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.background = colors[i%3];
+    s.style.opacity = (Math.random()*0.5+0.2).toFixed(2);
+    dust.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
