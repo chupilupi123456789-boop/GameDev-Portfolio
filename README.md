@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/chupilupi123456789-boop/GameDev-Portfolio/main/assets/banner.svg" alt="Saul Santiago Gutierrez Villacorta — Game Development Portfolio" width="100%">
+![Saul Santiago Gutierrez Villacorta — Game Development Portfolio](./assets/banner.svg)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -6,20 +6,21 @@
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=github&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-En%20progreso-7CFFB2?style=for-the-badge)
 
+## Sobre mí
 
 **Nombre:** Saul Santiago Gutierrez Villacorta
 
 **Intereses:** Lo que más me interesó personalmente fue crear videojuegos bien estructurados, y mejorar en el manejo de la IA, que ya está llegando a tener un gran impacto en la sociedad.
 
-##  Apoyo de IA
+## Apoyo de IA
 
 La IA me ayudó a entender y facilitar la creación de algunos juegos, mostrándome qué tan fácil puede ser trabajar con ella y qué tanto puede ofrecer para apoyar en distintas partes del proceso de creación de videojuegos.
 
-##  Qué aprendí
+## Qué aprendí
 
 Logré aprender una variedad de cosas gracias a la facilidad que da la IA, tanto en la creación de estos juegos como en el comportamiento del código. Crear juegos resultó ser muy interesante y eficaz, más aún poder construir uno propio con la ayuda que brindan estas herramientas.
 
-##  Qué mejoraría en una próxima versión
+## Qué mejoraría en una próxima versión
 
 Mejoraría la jugabilidad, los gráficos, los personajes/avatares, los diseños y los efectos de sonido.
 
@@ -60,3 +61,9 @@ Videojuego RPG top-down de exploración y resolución de acertijos matemáticos.
 Videojuego de aventura narrativa interactiva donde las decisiones del jugador determinan el camino de Mica a través de diferentes situaciones. Cada elección se complementa con un mini-juego de reflejos y movimiento que permite experimentar las consecuencias de la decisión tomada.
 
 [Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/)
+
+### Trash Smash: Ritmo de Reciclaje
+
+Videojuego arcade de ritmo y reflejos. La basura cae infinitamente en distintos carriles y el jugador debe atraparla en el carril correcto justo al ritmo indicado. El juego nunca termina: entre más aguantas, más rápido y difícil se pone.
+
+[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/trash-smash/)
