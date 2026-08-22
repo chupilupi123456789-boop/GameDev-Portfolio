@@ -29,7 +29,7 @@
       radial-gradient(circle at 85% 15%, rgba(110,198,255,.14), transparent 45%),
       radial-gradient(circle at 75% 85%, rgba(255,110,199,.10), transparent 45%),
       linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-glow) 100%);
-    background-attachment:fixed;
+    background-repeat:no-repeat;
     min-height:100vh;
     line-height:1.5;
   }
@@ -74,6 +74,7 @@
   .section-head .count{font-size:.85rem;color:var(--text-dim);font-family:'Space Grotesk',sans-serif;}
 
   .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+  .about-grid.three{grid-template-columns:1fr 1fr 1fr;}
   @media(max-width:760px){.about-grid{grid-template-columns:1fr;}}
   .about-card{
     background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:26px 28px;
@@ -147,6 +148,24 @@
     </div>
   </section>
 
+  <section id="proceso">
+    <div class="section-head"><h2>Apoyo de IA y aprendizaje</h2></div>
+    <div class="about-grid three">
+      <div class="about-card">
+        <h3>Apoyo de IA</h3>
+        <p>La IA me ayudó a entender y facilitar la creación de algunos juegos, mostrándome qué tan fácil puede ser trabajar con ella y qué tanto puede ofrecer para apoyar en distintas partes del proceso de creación de videojuegos.</p>
+      </div>
+      <div class="about-card">
+        <h3>Qué aprendí</h3>
+        <p>Logré aprender una variedad de cosas gracias a la facilidad que da la IA, tanto en la creación de estos juegos como en el comportamiento del código. Crear juegos resultó ser muy interesante y eficaz, más aún poder construir uno propio con la ayuda que brindan estas herramientas.</p>
+      </div>
+      <div class="about-card">
+        <h3>Qué mejoraría</h3>
+        <p>En una próxima versión: mejor jugabilidad y balance de dificultad, gráficos y animaciones más elaborados, personajes/avatares propios, diseños visuales más pulidos, y efectos de sonido y música.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="juegos">
     <div class="section-head">
       <h2>Galería de videojuegos</h2>
@@ -158,42 +177,42 @@
         <span class="tag arcade">Arcade</span>
         <h3>Come Sano: El Cazador de Nutrientes</h3>
         <p>Versión educativa estilo Pac-Man. Recorre el laberinto recolectando comida saludable mientras evitas la comida chatarra.</p>
-        <a class="play" href="./games/come-sano-pacman/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/come-sano-pacman/">Jugar</a>
       </div>
 
       <div class="card">
         <span class="tag arcade">Arcade</span>
         <h3>EcoClasifica: Recicla Correctamente</h3>
         <p>Clasifica los residuos que caen en el contenedor correcto antes de que toquen el suelo. La velocidad aumenta con cada acierto.</p>
-        <a class="play" href="./games/ecoclasifica/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/ecoclasifica/">Jugar</a>
       </div>
 
       <div class="card">
         <span class="tag puzzle">Puzzle</span>
         <h3>MensInBlack La Paz</h3>
         <p>Cava túneles y controla válvulas para guiar el agua desde la tubería hasta la tina del Agente Rodmy, superando distintos niveles.</p>
-        <a class="play" href="./games/mensinblack-lapaz/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/mensinblack-lapaz/">Jugar</a>
       </div>
 
       <div class="card">
         <span class="tag estrategia">Estrategia</span>
         <h3>2000 Bs: La Ciudad de las Decisiones</h3>
         <p>Simulación financiera: empieza con 2000 Bs y decide entre invertir, apostar o gastar para llegar a los 4500 Bs.</p>
-        <a class="play" href="./games/2000bs-la-ciudad-de-las-decisiones/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/2000bs-la-ciudad-de-las-decisiones/">Jugar</a>
       </div>
 
       <div class="card">
         <span class="tag rpg">RPG</span>
         <h3>Evo y Baldor: Misión en el CHAPARE</h3>
         <p>RPG top-down: resuelve acertijos matemáticos para conseguir herramientas y completar objetivos en el Chapare.</p>
-        <a class="play" href="./games/evo-baldor-chapare/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/evo-baldor-chapare/">Jugar</a>
       </div>
 
       <div class="card">
         <span class="tag aventura">Aventura</span>
         <h3>Mica: Un video, muchos caminos</h3>
         <p>Narrativa interactiva: cada decisión se juega con un mini-juego de reflejos distinto y lleva a un final diferente.</p>
-        <a class="play" href="./games/mica-un-video-muchos-caminos/" target="_blank" rel="noopener">Jugar</a>
+        <a class="play" href="./games/mica-un-video-muchos-caminos/">Jugar</a>
       </div>
 
     </div>
