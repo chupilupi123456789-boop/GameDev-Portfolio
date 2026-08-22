@@ -10,6 +10,8 @@
 
 ### Portafolio personal de desarrollo de videojuegos — HTML5, CSS3 y JavaScript, jugables directamente desde el navegador.
 
+**[🎮 Ver portafolio interactivo](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/)**
+
 </div>
 
 ---
@@ -48,16 +50,16 @@ Todos los proyectos de este portafolio están construidos **sin frameworks ni mo
 
 ## Galería de videojuegos
 
-| Juego | Descripción | Género | Jugar |
-|---|---|---|:---:|
-| **Come Sano: El Cazador de Nutrientes** | Versión educativa estilo Pac-Man. Recorre el laberinto recolectando comida saludable mientras evitas la comida chatarra. | Arcade | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/come-sano-pacman/) |
-| **EcoClasifica: Recicla Correctamente** | Clasifica los residuos que caen en el contenedor correcto antes de que toquen el suelo. La velocidad aumenta con cada acierto. | Arcade | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/ecoclasifica/) |
-| **MensInBlack La Paz** | Cava túneles y controla válvulas para guiar el agua desde la tubería hasta la tina del Agente Rodmy, superando distintos niveles. | Puzzle | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mensinblack-lapaz/) |
-| **2000 Bs: La Ciudad de las Decisiones** | Simulación financiera: empieza con 2000 Bs y decide entre invertir, apostar o gastar para llegar a los 4500 Bs. | Estrategia | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/2000bs-la-ciudad-de-las-decisiones/) |
-| **Evo y Baldor: Misión en el CHAPARE** | RPG top-down: resuelve acertijos matemáticos para conseguir herramientas y completar objetivos en el Chapare. | RPG | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/) |
-| **Mica: Un video, muchos caminos** | Narrativa interactiva: cada decisión se juega con un mini-juego de reflejos distinto y lleva a un final diferente. | Aventura | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/) |
+| Juego | Descripción | Género | Detalles | Jugar |
+|---|---|---|:---:|:---:|
+| **Come Sano: El Cazador de Nutrientes** | Versión educativa estilo Pac-Man. Recorre el laberinto recolectando comida saludable mientras evitas la comida chatarra. | Arcade | [Ver más](./games/come-sano-pacman/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/come-sano-pacman/) |
+| **EcoClasifica: Recicla Correctamente** | Clasifica los residuos que caen en el contenedor correcto antes de que toquen el suelo. La velocidad aumenta con cada acierto. | Arcade | [Ver más](./games/ecoclasifica/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/ecoclasifica/) |
+| **MensInBlack La Paz** | Cava túneles y controla válvulas para guiar el agua desde la tubería hasta la tina del Agente Rodmy, superando distintos niveles. | Puzzle | [Ver más](./games/mensinblack-lapaz/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mensinblack-lapaz/) |
+| **2000 Bs: La Ciudad de las Decisiones** | Simulación financiera: empieza con 2000 Bs y decide entre invertir, apostar o gastar para llegar a los 4500 Bs. | Estrategia | [Ver más](./games/2000bs-la-ciudad-de-las-decisiones/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/2000bs-la-ciudad-de-las-decisiones/) |
+| **Evo y Baldor: Misión en el CHAPARE** | RPG top-down: resuelve acertijos matemáticos para conseguir herramientas y completar objetivos en el Chapare. | RPG | [Ver más](./games/evo-baldor-chapare/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/) |
+| **Mica: Un video, muchos caminos** | Narrativa interactiva: cada decisión se juega con un mini-juego de reflejos distinto y lleva a un final diferente. | Aventura | [Ver más](./games/mica-un-video-muchos-caminos/README.md) | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/) |
 
-> Cada juego cuenta con su propio README (descripción completa, controles, tecnología y capturas de pantalla) dentro de su carpeta en `/games`.
+> **Detalles** te lleva al README propio de cada juego (descripción completa, controles, tecnología y capturas). **Jugar** abre el juego en el navegador.
 
 ---
 
