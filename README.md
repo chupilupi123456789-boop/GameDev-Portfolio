@@ -62,8 +62,3 @@ Videojuego de aventura narrativa interactiva donde las decisiones del jugador de
 
 [Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/)
 
-### Trash Smash: Ritmo de Reciclaje
-
-Videojuego arcade de ritmo y reflejos. La basura cae infinitamente en distintos carriles y el jugador debe atraparla en el carril correcto justo al ritmo indicado. El juego nunca termina: entre más aguantas, más rápido y difícil se pone.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/trash-smash/)
