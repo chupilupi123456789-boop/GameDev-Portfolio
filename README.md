@@ -1,4 +1,6 @@
-![Saul Santiago Gutierrez Villacorta — Game Development Portfolio](./assets/banner.svg)
+<div align="center">
+
+![Saul Santiago Gutierrez Villacorta — Game Development Portfolio](./assets/banner.png)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -6,11 +8,58 @@
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=github&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-En%20progreso-7CFFB2?style=for-the-badge)
 
+### Portafolio personal de desarrollo de videojuegos — HTML5, CSS3 y JavaScript, jugables directamente desde el navegador.
+
+</div>
+
+---
+
+## Contenido
+
+- [Sobre mí](#sobre-mí)
+- [Stack técnico](#stack-técnico)
+- [Galería de videojuegos](#galería-de-videojuegos)
+- [Apoyo de IA](#apoyo-de-ia)
+- [Qué aprendí](#qué-aprendí)
+- [Qué mejoraría](#qué-mejoraría-en-una-próxima-versión)
+
+---
+
 ## Sobre mí
 
-**Nombre:** Saul Santiago Gutierrez Villacorta
+| | |
+|---|---|
+| **Nombre** | Saul Santiago Gutierrez Villacorta |
+| **Enfoque** | Diseño y programación de videojuegos educativos |
+| **Intereses** | Crear videojuegos bien estructurados y mejorar mi manejo de la Inteligencia Artificial, una herramienta que ya tiene un gran impacto en la sociedad y en el desarrollo de software. |
 
-**Intereses:** Lo que más me interesó personalmente fue crear videojuegos bien estructurados, y mejorar en el manejo de la IA, que ya está llegando a tener un gran impacto en la sociedad.
+---
+
+## Stack técnico
+
+Todos los proyectos de este portafolio están construidos **sin frameworks ni motores externos**, usando tecnologías web nativas:
+
+- **HTML5** — estructura y `Canvas API` para el renderizado del juego
+- **CSS3** — estilos, animaciones y diseño responsive
+- **JavaScript (Vanilla)** — lógica de juego, físicas simples e interactividad
+- **GitHub Pages** — hosting y despliegue de cada prototipo
+
+---
+
+## Galería de videojuegos
+
+| Juego | Descripción | Género | Jugar |
+|---|---|---|:---:|
+| **Come Sano: El Cazador de Nutrientes** | Versión educativa estilo Pac-Man. Recorre el laberinto recolectando comida saludable mientras evitas la comida chatarra. | Arcade | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/come-sano-pacman/) |
+| **EcoClasifica: Recicla Correctamente** | Clasifica los residuos que caen en el contenedor correcto antes de que toquen el suelo. La velocidad aumenta con cada acierto. | Arcade | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/ecoclasifica/) |
+| **MensInBlack La Paz** | Cava túneles y controla válvulas para guiar el agua desde la tubería hasta la tina del Agente Rodmy, superando distintos niveles. | Puzzle | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mensinblack-lapaz/) |
+| **2000 Bs: La Ciudad de las Decisiones** | Simulación financiera: empieza con 2000 Bs y decide entre invertir, apostar o gastar para llegar a los 4500 Bs. | Estrategia | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/2000bs-la-ciudad-de-las-decisiones/) |
+| **Evo y Baldor: Misión en el CHAPARE** | RPG top-down: resuelve acertijos matemáticos para conseguir herramientas y completar objetivos en el Chapare. | RPG | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/) |
+| **Mica: Un video, muchos caminos** | Narrativa interactiva: cada decisión se juega con un mini-juego de reflejos distinto y lleva a un final diferente. | Aventura | [Jugar](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/) |
+
+> Cada juego cuenta con su propio README (descripción completa, controles, tecnología y capturas de pantalla) dentro de su carpeta en `/games`.
+
+---
 
 ## Apoyo de IA
 
@@ -22,43 +71,16 @@ Logré aprender una variedad de cosas gracias a la facilidad que da la IA, tanto
 
 ## Qué mejoraría en una próxima versión
 
-Mejoraría la jugabilidad, los gráficos, los personajes/avatares, los diseños y los efectos de sonido.
+- Mejorar la jugabilidad y el balance de dificultad
+- Gráficos y animaciones más elaborados
+- Personajes/avatares propios
+- Diseños visuales más pulidos
+- Efectos de sonido y música
 
-## Juegos
+---
 
-### Come Sano: El Cazador de Nutrientes
+<div align="center">
 
-Videojuego arcade educativo inspirado en Pac-Man. El jugador debe recorrer el escenario, recolectar alimentos saludables y evitar la comida chatarra para conseguir la mayor puntuación posible.
+Hecho por **Saul Santiago Gutierrez Villacorta** — La Paz, Bolivia
 
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/come-sano-pacman/)
-
-### EcoClasifica: Recicla Correctamente
-
-Videojuego arcade educativo centrado en el reciclaje y la clasificación de residuos. El jugador debe identificar correctamente cada residuo y colocarlo en el contenedor correspondiente, poniendo a prueba su precisión y velocidad de reacción.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/ecoclasifica/)
-
-### MensInBlack La Paz
-
-Videojuego de puzzle ambientado en La Paz. El jugador debe cavar túneles y controlar diferentes válvulas para conducir el agua desde las tuberías hasta la tina del Agente Rodmy, evitando desperdiciarla y superando los distintos niveles.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mensinblack-lapaz/)
-
-### 2000 Bs: La Ciudad de las Decisiones
-
-Videojuego de estrategia y simulación financiera. El jugador comienza con 2000 Bs y debe tomar decisiones sobre cómo administrar su dinero, pudiendo invertir, apostar o realizar diferentes compras. El objetivo es alcanzar los 4500 Bs sin quedarse sin recursos.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/2000bs-la-ciudad-de-las-decisiones/)
-
-### Evo y Baldor: Misión en el CHAPARE
-
-Videojuego RPG top-down de exploración y resolución de acertijos matemáticos. El jugador debe explorar el Chapare, abrir cofres, conseguir herramientas y completar diferentes objetivos utilizando el equipo adecuado para cada situación.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/evo-baldor-chapare/)
-
-### Mica: Un video, muchos caminos
-
-Videojuego de aventura narrativa interactiva donde las decisiones del jugador determinan el camino de Mica a través de diferentes situaciones. Cada elección se complementa con un mini-juego de reflejos y movimiento que permite experimentar las consecuencias de la decisión tomada.
-
-[Ver juego](https://chupilupi123456789-boop.github.io/GameDev-Portfolio/games/mica-un-video-muchos-caminos/)
-
+</div>
